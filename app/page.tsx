@@ -1,7 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useRef, useState } from 'react'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowUpRight, ChevronDown, Menu, MoveRight, X } from 'lucide-react'
+
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const categories = [
   { name: 'Electrical & Switchgear', short: 'ELECTRICAL', text: 'Cable management, glands, lugs, conduits, earthing products and electrical components.', image: '/product-components.png' },
@@ -16,24 +21,57 @@ export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState(0)
   const category = categories[activeCategory]
+  const mainRef = useRef<HTMLElement>(null)
+  const categoryImageRef = useRef<HTMLImageElement>(null)
 
-  useEffect(() => {
-    const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]')
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible')
-          observer.unobserve(entry.target)
-        }
+  useGSAP(() => {
+    const mm = gsap.matchMedia()
+    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+    mm.add({ desktop: '(min-width: 801px)', reduceMotion: '(prefers-reduced-motion: reduce)' }, (context) => {
+      const { desktop, reduceMotion } = context.conditions ?? {}
+      if (reduceMotion) {
+        gsap.set('[data-gsap]', { clearProps: 'all' })
+        return
+      }
+
+      intro
+        .from('.site-nav', { y: -24, autoAlpha: 0, duration: 0.7 })
+        .from('.hero-content .eyebrow', { y: 18, autoAlpha: 0, duration: 0.5 }, '-=0.25')
+        .from('.hero h1', { y: 58, autoAlpha: 0, duration: 0.9 }, '-=0.2')
+        .from('.hero-copy', { y: 20, autoAlpha: 0, duration: 0.55 }, '-=0.45')
+        .from('.hero-actions', { y: 20, autoAlpha: 0, duration: 0.55 }, '-=0.35')
+        .from('.hero-footer', { y: 16, autoAlpha: 0, duration: 0.5 }, '-=0.25')
+
+      if (desktop) {
+        gsap.to('.hero-image', { yPercent: 12, scale: 1.12, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } })
+      }
+
+      gsap.utils.toArray<HTMLElement>('.reveal-section').forEach((section) => {
+        gsap.from(section.querySelectorAll('.eyebrow, h2, .intro-copy, .wall-grid, .application-list, .facts, .brand-strip'), {
+          y: 42,
+          autoAlpha: 0,
+          duration: 0.8,
+          stagger: 0.08,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: section, start: 'top 82%', once: true },
+        })
       })
-    }, { threshold: 0.14 })
 
-    revealItems.forEach((item) => observer.observe(item))
-    return () => observer.disconnect()
-  }, [])
+      gsap.from('.image-panel', { y: 45, scale: 0.96, autoAlpha: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out', scrollTrigger: { trigger: '.product-wall', start: 'top 75%', once: true } })
+      gsap.to('.brand-track', { xPercent: -50, duration: 28, ease: 'none', repeat: -1 })
+    })
+
+    return () => { intro.kill(); mm.revert() }
+  }, { scope: mainRef })
+
+  useGSAP(() => {
+    if (!categoryImageRef.current) return
+    gsap.fromTo(categoryImageRef.current, { autoAlpha: 0, x: 24, scale: 1.04 }, { autoAlpha: 1, x: 0, scale: 1, duration: 0.65, ease: 'power3.out' })
+  }, { dependencies: [activeCategory], scope: mainRef })
 
   return (
-    <main className="site-shell overflow-x-hidden">
+    <main ref={mainRef} className="site-shell overflow-x-hidden">
       <nav className={`site-nav ${menuOpen ? 'nav-open' : ''}`} aria-label="Primary navigation">
         <a href="#top" className="wordmark" onClick={() => setMenuOpen(false)}>POWER<span>POLE</span></a>
         <div className="desktop-links"><a href="#products">Products</a><a href="#industries">Industries</a><a href="#about">About</a></div>
@@ -57,7 +95,7 @@ export default function Page() {
 
       <section id="products" className="section discovery reveal-section" data-reveal>
         <div className="section-intro"><p className="eyebrow"><span /> Product discovery</p><h2>What are<br /><em>you sourcing?</em></h2><p className="intro-copy">A focused supply range for the components, equipment and consumables that keep industrial environments moving.</p></div>
-        <div className="category-feature"><div className="category-visual"><img src={category.image} alt={`${category.name} equipment`} /><div className="scan-line" /></div><div className="category-list">{categories.map((item, index) => <button key={item.name} className={`category-row ${activeCategory === index ? 'active' : ''}`} onMouseEnter={() => setActiveCategory(index)} onFocus={() => setActiveCategory(index)} onClick={() => setActiveCategory(index)}><span className="category-number">0{index + 1}</span><span className="category-name">{item.name}</span><ArrowUpRight size={18} /></button>)}<div className="category-detail"><p>{category.text}</p><a href="mailto:info@powerpole.ae?subject=Product%20Enquiry">Enquire about this range <MoveRight size={15} /></a></div></div></div>
+        <div className="category-feature"><div className="category-visual"><img ref={categoryImageRef} data-gsap src={category.image} alt={`${category.name} equipment`} /><div className="scan-line" /></div><div className="category-list">{categories.map((item, index) => <button key={item.name} className={`category-row ${activeCategory === index ? 'active' : ''}`} onMouseEnter={() => setActiveCategory(index)} onFocus={() => setActiveCategory(index)} onClick={() => setActiveCategory(index)}><span className="category-number">0{index + 1}</span><span className="category-name">{item.name}</span><ArrowUpRight size={18} /></button>)}<div className="category-detail"><p>{category.text}</p><a href="mailto:info@powerpole.ae?subject=Product%20Enquiry">Enquire about this range <MoveRight size={15} /></a></div></div></div>
       </section>
 
       <section className="section product-wall reveal-section" data-reveal><div className="wall-heading"><p className="eyebrow"><span /> Supply range</p><h2>Industrial components.<br /><em>One source.</em></h2></div><div className="wall-grid"><div className="wall-tall image-panel"><img src="/product-components.png" alt="Cable glands and industrial connectors" /><span>01 / COMPONENTS</span></div><div className="wall-wide image-panel"><img src="/control-panel.png" alt="Industrial control cabinet components" /><span>02 / CONTROL</span></div><div className="wall-note"><strong>01—04</strong><p>From cable entry and connection to control, protection and hazardous-area requirements.</p></div><div className="wall-small image-panel"><img src="/industrial-hero.png" alt="Electrical equipment detail" /><span>03 / ELECTRICAL</span></div></div></section>
