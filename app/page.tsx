@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowUpRight, ChevronDown, Menu, MoveRight, X } from 'lucide-react'
 
 const categories = [
@@ -16,6 +16,21 @@ export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState(0)
   const category = categories[activeCategory]
+
+  useEffect(() => {
+    const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]')
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+          observer.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.14 })
+
+    revealItems.forEach((item) => observer.observe(item))
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <main className="site-shell overflow-x-hidden">
@@ -40,18 +55,18 @@ export default function Page() {
         <div className="hero-footer"><span>POWER POLE GENERAL TRADING</span><span>SOLE PROPRIETORSHIP LLC</span><span className="scroll-cue">Scroll to explore <ChevronDown size={16} /></span></div>
       </section>
 
-      <section id="products" className="section discovery">
+      <section id="products" className="section discovery reveal-section" data-reveal>
         <div className="section-intro"><p className="eyebrow"><span /> Product discovery</p><h2>What are<br /><em>you sourcing?</em></h2><p className="intro-copy">A focused supply range for the components, equipment and consumables that keep industrial environments moving.</p></div>
         <div className="category-feature"><div className="category-visual"><img src={category.image} alt={`${category.name} equipment`} /><div className="scan-line" /></div><div className="category-list">{categories.map((item, index) => <button key={item.name} className={`category-row ${activeCategory === index ? 'active' : ''}`} onMouseEnter={() => setActiveCategory(index)} onFocus={() => setActiveCategory(index)} onClick={() => setActiveCategory(index)}><span className="category-number">0{index + 1}</span><span className="category-name">{item.name}</span><ArrowUpRight size={18} /></button>)}<div className="category-detail"><p>{category.text}</p><a href="mailto:info@powerpole.ae?subject=Product%20Enquiry">Enquire about this range <MoveRight size={15} /></a></div></div></div>
       </section>
 
-      <section className="section product-wall"><div className="wall-heading"><p className="eyebrow"><span /> Supply range</p><h2>Industrial components.<br /><em>One source.</em></h2></div><div className="wall-grid"><div className="wall-tall image-panel"><img src="/product-components.png" alt="Cable glands and industrial connectors" /><span>01 / COMPONENTS</span></div><div className="wall-wide image-panel"><img src="/control-panel.png" alt="Industrial control cabinet components" /><span>02 / CONTROL</span></div><div className="wall-note"><strong>01—04</strong><p>From cable entry and connection to control, protection and hazardous-area requirements.</p></div><div className="wall-small image-panel"><img src="/industrial-hero.png" alt="Electrical equipment detail" /><span>03 / ELECTRICAL</span></div></div></section>
+      <section className="section product-wall reveal-section" data-reveal><div className="wall-heading"><p className="eyebrow"><span /> Supply range</p><h2>Industrial components.<br /><em>One source.</em></h2></div><div className="wall-grid"><div className="wall-tall image-panel"><img src="/product-components.png" alt="Cable glands and industrial connectors" /><span>01 / COMPONENTS</span></div><div className="wall-wide image-panel"><img src="/control-panel.png" alt="Industrial control cabinet components" /><span>02 / CONTROL</span></div><div className="wall-note"><strong>01—04</strong><p>From cable entry and connection to control, protection and hazardous-area requirements.</p></div><div className="wall-small image-panel"><img src="/industrial-hero.png" alt="Electrical equipment detail" /><span>03 / ELECTRICAL</span></div></div></section>
 
-      <section id="industries" className="section applications"><div className="application-copy"><p className="eyebrow light"><span /> Application context</p><h2>Equipment that fits<br /><em>the work.</em></h2><p>Power Pole supports procurement across the industrial environments where dependable components and clear commercial response matter.</p><a href="mailto:info@powerpole.ae?subject=Industrial%20Requirement" className="text-link">Discuss your requirement <ArrowUpRight size={16} /></a></div><div className="application-list"><div><span>01</span><strong>Oil &amp; Gas</strong><small>Equipment, consumables and hazardous-area requirements.</small></div><div><span>02</span><strong>Industrial Facilities</strong><small>Electrical and control components for operating environments.</small></div><div><span>03</span><strong>EPC &amp; Engineering</strong><small>Specified products for project and procurement needs.</small></div><div><span>04</span><strong>Maintenance &amp; Operations</strong><small>Replacement components and routine industrial supply.</small></div></div></section>
+      <section id="industries" className="section applications reveal-section" data-reveal><div className="application-copy"><p className="eyebrow light"><span /> Application context</p><h2>Equipment that fits<br /><em>the work.</em></h2><p>Power Pole supports procurement across the industrial environments where dependable components and clear commercial response matter.</p><a href="mailto:info@powerpole.ae?subject=Industrial%20Requirement" className="text-link">Discuss your requirement <ArrowUpRight size={16} /></a></div><div className="application-list"><div><span>01</span><strong>Oil &amp; Gas</strong><small>Equipment, consumables and hazardous-area requirements.</small></div><div><span>02</span><strong>Industrial Facilities</strong><small>Electrical and control components for operating environments.</small></div><div><span>03</span><strong>EPC &amp; Engineering</strong><small>Specified products for project and procurement needs.</small></div><div><span>04</span><strong>Maintenance &amp; Operations</strong><small>Replacement components and routine industrial supply.</small></div></div></section>
 
-      <section id="about" className="section credibility"><div><p className="eyebrow"><span /> A clear basis for supply</p><h2>Built around<br /><em>industrial supply.</em></h2></div><div className="credibility-body"><p>Power Pole General Trading is an Abu Dhabi-based industrial trading and supply company providing electrical, automation, hazardous-area and oil &amp; gas-related equipment for industrial requirements.</p><div className="facts"><div><strong>EST. 2023</strong><span>Established</span></div><div><strong>MUSSAFAH</strong><span>Abu Dhabi, UAE</span></div><div><strong>B2B SUPPLY</strong><span>Industrial trading</span></div></div></div></section>
+      <section id="about" className="section credibility reveal-section" data-reveal><div><p className="eyebrow"><span /> A clear basis for supply</p><h2>Built around<br /><em>industrial supply.</em></h2></div><div className="credibility-body"><p>Power Pole General Trading is an Abu Dhabi-based industrial trading and supply company providing electrical, automation, hazardous-area and oil &amp; gas-related equipment for industrial requirements.</p><div className="facts"><div><strong>EST. 2023</strong><span>Established</span></div><div><strong>MUSSAFAH</strong><span>Abu Dhabi, UAE</span></div><div><strong>B2B SUPPLY</strong><span>Industrial trading</span></div></div></div></section>
 
-      <section className="brands"><p className="eyebrow"><span /> Sourced brand references</p><div className="brand-marquee">{brands.map(brand => <span key={brand}>{brand}</span>)}</div></section>
+      <section className="brands reveal-section" data-reveal><p className="eyebrow"><span /> Sourced brand references</p><div className="brand-strip" aria-label="Sourced brand references"><div className="brand-track">{[...brands, ...brands].map((brand, index) => <span key={`${brand}-${index}`}>{brand}</span>)}</div></div></section>
 
       <section className="final-cta"><div className="final-image" /><div className="final-overlay" /><div className="final-content"><p className="eyebrow light"><span /> Start a commercial conversation</p><h2>Looking for a<br /><em>specific component?</em></h2><p>Tell us what you need. We&apos;ll take it from there.</p><div className="hero-actions"><a href="mailto:info@powerpole.ae?subject=RFQ%20Request" className="button button-orange">Request a quote <ArrowUpRight size={16} /></a><a href="https://wa.me/971525439164" className="button button-outline">WhatsApp sales <ArrowUpRight size={16} /></a></div></div></section>
 
