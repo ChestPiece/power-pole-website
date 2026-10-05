@@ -3,9 +3,14 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Power Pole | Industrial Equipment Supply',
+  description: 'Electrical, automation, hazardous-area and oil & gas equipment supplied from Abu Dhabi, UAE.',
   generator: 'v0.app',
+  openGraph: {
+    title: 'Power Pole | Industrial Equipment Supply',
+    description: 'Industrial equipment supply for demanding applications.',
+    type: 'website',
+  },
   icons: {
     icon: [
       {
