@@ -12,12 +12,20 @@ const manrope = Manrope({
 })
 
 export const metadata: Metadata = {
-  title: 'Power Pole | Industrial Equipment Supply',
-  description: 'Electrical, automation, hazardous-area and oil & gas equipment supplied from Abu Dhabi, UAE.',
+  metadataBase: new URL('https://powerpole.ae'),
+  title: 'Power Pole | Industrial Equipment Supply Abu Dhabi',
+  description: 'Electrical, automation, hazardous area and oil and gas equipment supplied from Abu Dhabi, UAE. Request a quote for industrial procurement.',
   openGraph: {
-    title: 'Power Pole | Industrial Equipment Supply',
-    description: 'Industrial equipment supply for demanding applications.',
+    title: 'Power Pole | Industrial Equipment Supply Abu Dhabi',
+    description: 'Industrial equipment supply for demanding applications. Clear quotes from Abu Dhabi.',
     type: 'website',
+    images: [{ url: '/industrial-hero.png', width: 1200, height: 630, alt: 'Industrial electrical components' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Power Pole | Industrial Equipment Supply Abu Dhabi',
+    description: 'Industrial equipment supply for demanding applications. Clear quotes from Abu Dhabi.',
+    images: ['/industrial-hero.png'],
   },
   icons: {
     icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],

@@ -18,12 +18,12 @@ gsap.registerPlugin(ScrollTrigger)
 const categories = [
   { name: 'Electrical & Switchgear', short: 'ELECTRICAL', text: 'Cable management, glands, lugs, conduits, earthing products and electrical components.', image: '/product-components.png', icon: Zap },
   { name: 'Automation & Control', short: 'AUTOMATION', text: 'Sensors, contactors, MCBs, drives, connectors and automation components.', image: '/control-panel.png', icon: Gauge },
-  { name: 'Hazardous Area', short: 'HAZARDOUS AREA', text: 'Industrial plugs, sockets, cable glands and explosion-protected equipment.', image: '/industrial-hero.png', icon: ShieldCheck },
+  { name: 'Hazardous Area', short: 'HAZARDOUS AREA', text: 'Industrial plugs, sockets, cable glands and explosion protected equipment.', image: '/industrial-hero.png', icon: ShieldCheck },
   { name: 'Oil & Gas', short: 'OIL & GAS', text: 'Oil & gas equipment, lubricants, greases, coolants and related industrial supplies.', image: '/product-components.png', icon: Factory },
 ]
 
 const industries = [
-  { name: 'Oil & Gas', text: 'Equipment, consumables and hazardous-area requirements.', image: '/industrial-hero.png' },
+  { name: 'Oil & Gas', text: 'Equipment, consumables and hazardous area requirements.', image: '/industrial-hero.png' },
   { name: 'Industrial Facilities', text: 'Electrical and control components for operating environments.', image: '/control-panel.png' },
   { name: 'EPC & Engineering', text: 'Specified products for project and procurement needs.', image: '/product-components.png' },
   { name: 'Maintenance & Operations', text: 'Replacement components and routine industrial supply.', image: '/control-panel.png' },
@@ -31,11 +31,116 @@ const industries = [
 
 const brands = ['ABB', 'SIEMENS', 'EATON', 'HAWKE', 'CMP', 'RAYCHEM', 'APPLETON', 'AMPHENOL', 'COOPER CROUSE-HINDS', 'ATX']
 
+const heroProof = ['ABB', 'SIEMENS', 'EATON', 'HAWKE', 'CMP']
+
+const processSteps = [
+  {
+    title: 'Share your requirement',
+    text: 'Send part numbers, datasheets or a brief over email or WhatsApp. Include brand, quantity and site constraints when you have them.',
+  },
+  {
+    title: 'Receive quote and availability',
+    text: 'We confirm fit, lead time and commercial terms so procurement can decide with clear numbers.',
+  },
+  {
+    title: 'Confirm supply',
+    text: 'Approve the quote and we coordinate fulfilment for your project or maintenance schedule.',
+  },
+]
+
+const faqs = [
+  {
+    q: 'What do you supply?',
+    a: 'Electrical and switchgear components, automation and control, hazardous area equipment, and oil and gas related industrial supplies from our Abu Dhabi base.',
+  },
+  {
+    q: 'Which brands can you source?',
+    a: 'We regularly work with references such as ABB, Siemens, Eaton, Hawke, CMP, Raychem, Appleton, Amphenol and Cooper Crouse Hinds. Ask if you need a specific manufacturer.',
+  },
+  {
+    q: 'How do I request a quote?',
+    a: 'Email info@powerpole.ae or message WhatsApp sales with the part numbers, quantities and any datasheets. No obligation quote for industrial requirements.',
+  },
+  {
+    q: 'How fast do you respond?',
+    a: 'We aim to acknowledge commercial enquiries within one business day during UAE working hours. Complex multi line RFQs may take longer once we verify availability.',
+  },
+  {
+    q: 'Do you cover hazardous area equipment?',
+    a: 'Yes. We source plugs, sockets, cable glands and related explosion protected equipment against your stated site and certification needs.',
+  },
+  {
+    q: 'Where are you based?',
+    a: 'Mussafah, Sanaiya M 14, Plot 6, Office 6, Abu Dhabi, UAE. Local phone and WhatsApp contacts are listed in the footer.',
+  },
+  {
+    q: 'Is there a minimum order?',
+    a: 'Minimums depend on the product line and manufacturer. Share your list and we will flag any MOQ or pack size constraints in the quote.',
+  },
+  {
+    q: 'Do you deliver across the UAE?',
+    a: 'We support industrial supply for projects and operations across the UAE. Delivery options and timing are confirmed with each quote.',
+  },
+]
+
+const taglineLines = [
+  'Spec matched industrial supply',
+  'from enquiry to delivery.',
+]
+
 const navSections = [
   { id: 'products', label: 'Products' },
   { id: 'industries', label: 'Industries' },
   { id: 'about', label: 'About' },
 ]
+
+const TaglineReveal = ({ lines }: { lines: string[] }) => {
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+    const words = Array.from(section.querySelectorAll<HTMLElement>('.tagline-word'))
+    if (!words.length) return
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) {
+      words.forEach((word) => word.classList.add('is-lit'))
+      return
+    }
+
+    const observers = words.map((word) => {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry?.isIntersecting) return
+          word.classList.add('is-lit')
+          observer.unobserve(word)
+        },
+        { root: null, rootMargin: '-42% 0px -42% 0px', threshold: 0 },
+      )
+      observer.observe(word)
+      return observer
+    })
+
+    return () => observers.forEach((observer) => observer.disconnect())
+  }, [lines])
+
+  return (
+    <section ref={sectionRef} className="tagline-reveal" aria-label="Company promise">
+      <div className="tagline-reveal-inner">
+        {lines.map((line) => (
+          <p key={line} className="tagline-line">
+            {line.split(' ').map((word, index) => (
+              <span key={`${line}-${word}-${index}`} className="tagline-word">
+                {word}
+              </span>
+            ))}
+          </p>
+        ))}
+      </div>
+    </section>
+  )
+}
 
 export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -239,6 +344,7 @@ export default function Page() {
 
   return (
     <main ref={mainRef} className="site-shell overflow-x-hidden">
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <nav ref={navRef} className={`site-nav ${menuOpen ? 'nav-open' : ''}`} aria-label="Primary navigation">
         <a href="#top" className="wordmark" onClick={handleCloseMenu}>POWER<span>POLE</span></a>
         <div className="desktop-links">
@@ -282,21 +388,26 @@ export default function Page() {
       <section id="top" className="hero">
         <div className="hero-image" role="img" aria-label="Industrial electrical components arranged on a steel work surface" />
         <div className="hero-wash" />
-        <div className="hero-content">
+        <div id="main-content" className="hero-content" tabIndex={-1}>
           <p className="eyebrow light"><span /> Abu Dhabi / UAE</p>
           <h1>
-            <span className="hero-line-wrap"><span className="hero-line">Industrial equipment</span></span>
-            <span className="hero-line-wrap"><span className="hero-line"><em>sourced with precision.</em></span></span>
+            <span className="hero-line-wrap"><span className="hero-line">Get the components</span></span>
+            <span className="hero-line-wrap"><span className="hero-line">your project <em>spec calls for.</em></span></span>
           </h1>
-          <p className="hero-copy">Electrical, automation, hazardous-area and oil &amp; gas equipment for industrial requirements.</p>
+          <p className="hero-copy">Electrical, automation, hazardous area and oil and gas equipment from Abu Dhabi. Clear quotes for procurement and project teams.</p>
           <div className="hero-actions">
             <a href="mailto:info@powerpole.ae?subject=RFQ%20Request" className="button button-orange">
               Request a quote <ArrowUpRight size={18} strokeWidth={1.75} aria-hidden="true" />
             </a>
-            <a href="#products" className="button button-outline">
+            <a href="#products" className="text-link hero-secondary">
               Explore products <MoveRight size={18} strokeWidth={1.75} aria-hidden="true" />
             </a>
           </div>
+          <p className="hero-proof" aria-label="Brand references">
+            {heroProof.map((brand) => (
+              <span key={brand}>{brand}</span>
+            ))}
+          </p>
         </div>
         <div className="hero-footer">
           <span>POWER POLE GENERAL TRADING</span>
@@ -305,11 +416,13 @@ export default function Page() {
         </div>
       </section>
 
+      <TaglineReveal lines={taglineLines} />
+
       <section id="products" className="section discovery reveal-section">
         <div className="section-intro reveal-heading">
           <p className="eyebrow"><span /> Product discovery</p>
           <h2>What are<br /><em>you sourcing?</em></h2>
-          <p className="intro-copy">A focused supply range for the components, equipment and consumables that keep industrial environments moving.</p>
+          <p className="intro-copy">One commercial contact for the components, equipment and consumables that keep industrial sites running.</p>
         </div>
         <div className="category-feature">
           <div className="category-visual">
@@ -354,6 +467,23 @@ export default function Page() {
         </div>
       </section>
 
+      <section id="process" className="section process reveal-section">
+        <div className="section-intro reveal-heading">
+          <p className="eyebrow"><span /> How it works</p>
+          <h2>From enquiry<br /><em>to supply.</em></h2>
+          <p className="intro-copy">A short commercial path built for procurement teams who need a clear next step.</p>
+        </div>
+        <ol className="process-list">
+          {processSteps.map((step, index) => (
+            <li key={step.title} className="process-step">
+              <span className="process-number">0{index + 1}</span>
+              <strong>{step.title}</strong>
+              <p>{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section className="section product-wall reveal-section">
         <div className="wall-heading reveal-heading">
           <p className="eyebrow"><span /> Supply range</p>
@@ -370,7 +500,7 @@ export default function Page() {
           </div>
           <div className="wall-note">
             <strong>01—04</strong>
-            <p>From cable entry and connection to control, protection and hazardous-area requirements.</p>
+            <p>From cable entry and connection to control, protection and hazardous area requirements.</p>
           </div>
           <div className="wall-small image-panel">
             <img src="/industrial-hero.png" alt="Electrical equipment detail" width={1100} height={500} />
@@ -435,7 +565,7 @@ export default function Page() {
             <p className="eyebrow"><span /> A clear basis for supply</p>
             <h2>Built around<br /><em>industrial supply.</em></h2>
           </div>
-          <p>Abu Dhabi-based trading for electrical, automation, hazardous-area and oil &amp; gas equipment — clear response for industrial requirements.</p>
+          <p>Abu Dhabi based trading for electrical, automation, hazardous area and oil and gas equipment. Clear response for industrial requirements.</p>
           <div className="facts">
             <div>
               <Cable size={18} strokeWidth={1.75} aria-hidden="true" />
@@ -467,12 +597,28 @@ export default function Page() {
         </div>
       </section>
 
+      <section id="faq" className="section faq reveal-section">
+        <div className="section-intro reveal-heading">
+          <p className="eyebrow"><span /> Common questions</p>
+          <h2>Before you<br /><em>send the RFQ.</em></h2>
+          <p className="intro-copy">Straight answers for procurement teams comparing suppliers.</p>
+        </div>
+        <div className="faq-list">
+          {faqs.map((item) => (
+            <details key={item.q} className="faq-item">
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       <section className="final-cta">
         <div className="final-overlay" />
         <div className="final-content">
           <p className="eyebrow light reveal-heading"><span /> Start a commercial conversation</p>
           <h2 className="reveal-heading">Looking for a<br /><em>specific component?</em></h2>
-          <p>Tell us what you need. We&apos;ll take it from there.</p>
+          <p>Tell us what you need. No obligation quote. Abu Dhabi based response during UAE working hours.</p>
           <div className="hero-actions">
             <a href="mailto:info@powerpole.ae?subject=RFQ%20Request" className="button button-orange">
               Request a quote <ArrowUpRight size={18} strokeWidth={1.75} aria-hidden="true" />
@@ -508,11 +654,15 @@ export default function Page() {
           <span>LOCATION</span>
           <p className="footer-location">
             <MapPin size={18} strokeWidth={1.75} aria-hidden="true" />
-            <span>Mussafah, Sanaiya M-14<br />Plot 6, Office 6<br />Abu Dhabi, UAE</span>
+            <span>Mussafah, Sanaiya M 14<br />Plot 6, Office 6<br />Abu Dhabi, UAE</span>
           </p>
         </div>
         <div className="footer-bottom">
           <span>© 2026 Power Pole General Trading</span>
+          <nav className="footer-legal" aria-label="Legal">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+          </nav>
           <span>Sole Proprietorship LLC</span>
         </div>
       </footer>
