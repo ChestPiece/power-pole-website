@@ -1,0 +1,17 @@
+[
+  {
+    "ts": "2026-10-05T17:55:00+05:00",
+    "surface": "landing",
+    "mood": "technical",
+    "macrostructure": "Long-Scroll Narrative",
+    "arc": "hook(hero) -> stakes(industries intro) -> solution(products+wall) -> how(industries visual) -> proof(about+brands) -> close(cta)",
+    "archetypes": {
+      "nav": "fixed wordmark + RFQ",
+      "hero": "full-bleed industrial photo",
+      "feature": "category switcher + product wall",
+      "proof": "about split + brand marquee",
+      "cta": "final RFQ band"
+    },
+    "notes": "polish playbook: style lock, drawer menu, visual industries/about, Magic UI marquee"
+  }
+]

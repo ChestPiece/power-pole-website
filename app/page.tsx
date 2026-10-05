@@ -5,6 +5,13 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowUpRight, Cable, ChevronDown, Factory, FileText, Gauge, MapPin, Menu, MessageCircle, MoveRight, Phone, ShieldCheck, X, Zap } from 'lucide-react'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import { Marquee } from '@/components/ui/marquee'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -13,6 +20,13 @@ const categories = [
   { name: 'Automation & Control', short: 'AUTOMATION', text: 'Sensors, contactors, MCBs, drives, connectors and automation components.', image: '/control-panel.png', icon: Gauge },
   { name: 'Hazardous Area', short: 'HAZARDOUS AREA', text: 'Industrial plugs, sockets, cable glands and explosion-protected equipment.', image: '/industrial-hero.png', icon: ShieldCheck },
   { name: 'Oil & Gas', short: 'OIL & GAS', text: 'Oil & gas equipment, lubricants, greases, coolants and related industrial supplies.', image: '/product-components.png', icon: Factory },
+]
+
+const industries = [
+  { name: 'Oil & Gas', text: 'Equipment, consumables and hazardous-area requirements.', image: '/industrial-hero.png' },
+  { name: 'Industrial Facilities', text: 'Electrical and control components for operating environments.', image: '/control-panel.png' },
+  { name: 'EPC & Engineering', text: 'Specified products for project and procurement needs.', image: '/product-components.png' },
+  { name: 'Maintenance & Operations', text: 'Replacement components and routine industrial supply.', image: '/control-panel.png' },
 ]
 
 const brands = ['ABB', 'SIEMENS', 'EATON', 'HAWKE', 'CMP', 'RAYCHEM', 'APPLETON', 'AMPHENOL', 'COOPER CROUSE-HINDS', 'ATX']
@@ -26,15 +40,18 @@ const navSections = [
 export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState(0)
+  const [activeIndustry, setActiveIndustry] = useState(0)
   const [activeSection, setActiveSection] = useState('')
   const category = categories[activeCategory]
+  const industry = industries[activeIndustry]
   const mainRef = useRef<HTMLElement>(null)
   const navRef = useRef<HTMLElement>(null)
   const categoryImageRef = useRef<HTMLImageElement>(null)
+  const industryImageRef = useRef<HTMLImageElement>(null)
   const categoryTweenRef = useRef<gsap.core.Tween | null>(null)
+  const industryTweenRef = useRef<gsap.core.Tween | null>(null)
   const categoryBarRef = useRef<HTMLSpanElement>(null)
   const categoryListRef = useRef<HTMLDivElement>(null)
-  const mobileMenuRef = useRef<HTMLDivElement>(null)
 
   useGSAP(() => {
     const mm = gsap.matchMedia()
@@ -126,18 +143,6 @@ export default function Page() {
           scrollTrigger: { trigger: '.final-cta', start: 'top 80%', once: true },
         })
 
-        const brandTicker = gsap.to('.brand-track', {
-          xPercent: -50,
-          duration: 28,
-          ease: 'none',
-          repeat: -1,
-        })
-        const strip = document.querySelector('.brand-strip')
-        const pauseTicker = () => brandTicker.pause()
-        const resumeTicker = () => brandTicker.resume()
-        strip?.addEventListener('pointerenter', pauseTicker)
-        strip?.addEventListener('pointerleave', resumeTicker)
-
         const arrowLinks = gsap.utils.toArray<HTMLElement>('.button svg, .nav-cta svg, .text-link svg, .category-detail a svg')
         const arrowHandlers = arrowLinks.map((icon) => {
           const parent = icon.closest('a, button') as HTMLElement | null
@@ -171,8 +176,6 @@ export default function Page() {
             parent.removeEventListener('focus', enter)
             parent.removeEventListener('blur', leave)
           })
-          strip?.removeEventListener('pointerenter', pauseTicker)
-          strip?.removeEventListener('pointerleave', resumeTicker)
         }
       },
     )
@@ -189,12 +192,32 @@ export default function Page() {
       gsap.set(img, { autoAlpha: 1, x: 0 })
       return
     }
+    // ponytail: animate from live values so rapid switches don't jump
     categoryTweenRef.current = gsap.fromTo(
       img,
-      { autoAlpha: 0.35, x: 16 },
-      { autoAlpha: 1, x: 0, duration: 0.55, ease: 'power3.out' },
+      {
+        autoAlpha: Number(gsap.getProperty(img, 'autoAlpha')) || 0.5,
+        x: Number(gsap.getProperty(img, 'x')) || 10,
+      },
+      { autoAlpha: 1, x: 0, duration: 0.45, ease: 'power3.out', overwrite: 'auto' },
     )
   }, { dependencies: [activeCategory], scope: mainRef })
+
+  useGSAP(() => {
+    const img = industryImageRef.current
+    if (!img) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    industryTweenRef.current?.kill()
+    if (reduce) {
+      gsap.set(img, { autoAlpha: 1, x: 0 })
+      return
+    }
+    industryTweenRef.current = gsap.fromTo(
+      img,
+      { autoAlpha: Number(gsap.getProperty(img, 'autoAlpha')) || 0.5, x: Number(gsap.getProperty(img, 'x')) || 10 },
+      { autoAlpha: 1, x: 0, duration: 0.45, ease: 'power3.out', overwrite: 'auto' },
+    )
+  }, { dependencies: [activeIndustry], scope: mainRef })
 
   useEffect(() => {
     const list = categoryListRef.current
@@ -208,45 +231,9 @@ export default function Page() {
       height: active.offsetHeight,
       duration: reduce ? 0 : 0.35,
       ease: 'power2.out',
+      overwrite: 'auto',
     })
   }, [activeCategory])
-
-  useEffect(() => {
-    const menu = mobileMenuRef.current
-    if (!menu) return
-    const links = menu.querySelectorAll('a')
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (menuOpen) {
-      menu.removeAttribute('hidden')
-      gsap.set(menu, { display: 'flex', autoAlpha: 1 })
-      if (reduce) {
-        gsap.set(links, { autoAlpha: 1, y: 0 })
-        return
-      }
-      gsap.fromTo(
-        links,
-        { autoAlpha: 0, y: 24 },
-        { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.06, ease: 'power3.out' },
-      )
-      return
-    }
-    if (reduce) {
-      gsap.set(menu, { autoAlpha: 0, display: 'none' })
-      menu.setAttribute('hidden', '')
-      return
-    }
-    gsap.to(links, {
-      autoAlpha: 0,
-      y: 12,
-      duration: 0.2,
-      stagger: 0.03,
-      ease: 'power2.in',
-      onComplete: () => {
-        gsap.set(menu, { autoAlpha: 0, display: 'none' })
-        menu.setAttribute('hidden', '')
-      },
-    })
-  }, [menuOpen])
 
   const handleCloseMenu = () => setMenuOpen(false)
 
@@ -269,24 +256,27 @@ export default function Page() {
         <a className="nav-cta" href="mailto:info@powerpole.ae?subject=RFQ%20Request">
           Request a quote <ArrowUpRight size={18} strokeWidth={1.75} aria-hidden="true" />
         </a>
-        <button
-          className="menu-button"
-          type="button"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-menu"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          {menuOpen ? <X size={22} strokeWidth={1.75} aria-hidden="true" /> : <Menu size={22} strokeWidth={1.75} aria-hidden="true" />}
-        </button>
-        <div ref={mobileMenuRef} id="mobile-menu" className="mobile-menu" hidden>
-          {navSections.map(({ id, label }) => (
-            <a key={id} href={`#${id}`} onClick={handleCloseMenu}>{label}</a>
-          ))}
-          <a href="https://wa.me/971525439164" onClick={handleCloseMenu}>
-            WhatsApp sales <ArrowUpRight size={18} strokeWidth={1.75} aria-hidden="true" />
-          </a>
-        </div>
+        <Drawer open={menuOpen} onOpenChange={setMenuOpen} swipeDirection="right">
+          <DrawerTrigger
+            className="menu-button"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          >
+            {menuOpen ? <X size={22} strokeWidth={1.75} aria-hidden="true" /> : <Menu size={22} strokeWidth={1.75} aria-hidden="true" />}
+          </DrawerTrigger>
+          <DrawerContent className="nav-drawer">
+            <DrawerTitle className="sr-only">Navigation</DrawerTitle>
+            <nav className="nav-drawer-links" aria-label="Mobile navigation">
+              {navSections.map(({ id, label }) => (
+                <a key={id} href={`#${id}`} onClick={handleCloseMenu}>
+                  {label}
+                </a>
+              ))}
+              <a href="https://wa.me/971525439164" onClick={handleCloseMenu}>
+                WhatsApp sales <ArrowUpRight size={18} strokeWidth={1.75} aria-hidden="true" />
+              </a>
+            </nav>
+          </DrawerContent>
+        </Drawer>
       </nav>
 
       <section id="top" className="hero">
@@ -393,42 +383,59 @@ export default function Page() {
         <div className="application-copy reveal-heading">
           <p className="eyebrow light"><span /> Application context</p>
           <h2>Equipment that fits<br /><em>the work.</em></h2>
-          <p>Power Pole supports procurement across the industrial environments where dependable components and clear commercial response matter.</p>
+          <p className="stakes-copy">Wrong specs and slow lead times stall projects. We match industrial requirements with clear commercial response.</p>
+          <p>Power Pole supports procurement across the environments where dependable components matter.</p>
           <a href="mailto:info@powerpole.ae?subject=Industrial%20Requirement" className="text-link">
             Discuss your requirement <ArrowUpRight size={18} strokeWidth={1.75} aria-hidden="true" />
           </a>
         </div>
-        <div className="application-list">
-          <div>
-            <span>01</span>
-            <strong>Oil &amp; Gas</strong>
-            <small>Equipment, consumables and hazardous-area requirements.</small>
+        <div className="industry-feature">
+          <div className="industry-visual image-panel">
+            <img
+              ref={industryImageRef}
+              data-gsap
+              src={industry.image}
+              alt={`${industry.name} application`}
+              width={900}
+              height={700}
+            />
           </div>
-          <div>
-            <span>02</span>
-            <strong>Industrial Facilities</strong>
-            <small>Electrical and control components for operating environments.</small>
-          </div>
-          <div>
-            <span>03</span>
-            <strong>EPC &amp; Engineering</strong>
-            <small>Specified products for project and procurement needs.</small>
-          </div>
-          <div>
-            <span>04</span>
-            <strong>Maintenance &amp; Operations</strong>
-            <small>Replacement components and routine industrial supply.</small>
+          <div className="application-list" role="list">
+            {industries.map((item, index) => (
+              <button
+                key={item.name}
+                type="button"
+                role="listitem"
+                className={`industry-row ${activeIndustry === index ? 'active' : ''}`}
+                onMouseEnter={() => setActiveIndustry(index)}
+                onFocus={() => setActiveIndustry(index)}
+                onClick={() => setActiveIndustry(index)}
+                aria-pressed={activeIndustry === index}
+              >
+                <span>0{index + 1}</span>
+                <strong>{item.name}</strong>
+                <small>{item.text}</small>
+              </button>
+            ))}
           </div>
         </div>
       </section>
 
       <section id="about" className="section credibility reveal-section">
-        <div className="reveal-heading">
-          <p className="eyebrow"><span /> A clear basis for supply</p>
-          <h2>Built around<br /><em>industrial supply.</em></h2>
+        <div className="credibility-visual image-panel">
+          <img
+            src="/product-components.png"
+            alt="Industrial components supplied by Power Pole"
+            width={900}
+            height={700}
+          />
         </div>
         <div className="credibility-body">
-          <p>Power Pole General Trading is an Abu Dhabi-based industrial trading and supply company providing electrical, automation, hazardous-area and oil &amp; gas-related equipment for industrial requirements.</p>
+          <div className="reveal-heading">
+            <p className="eyebrow"><span /> A clear basis for supply</p>
+            <h2>Built around<br /><em>industrial supply.</em></h2>
+          </div>
+          <p>Abu Dhabi-based trading for electrical, automation, hazardous-area and oil &amp; gas equipment — clear response for industrial requirements.</p>
           <div className="facts">
             <div>
               <Cable size={18} strokeWidth={1.75} aria-hidden="true" />
@@ -452,11 +459,11 @@ export default function Page() {
       <section className="brands reveal-section">
         <p className="eyebrow reveal-heading"><span /> Sourced brand references</p>
         <div className="brand-strip" aria-label="Sourced brand references">
-          <div className="brand-track">
-            {[...brands, ...brands].map((brand, index) => (
-              <span key={`${brand}-${index}`}>{brand}</span>
+          <Marquee pauseOnHover className="brand-marquee" repeat={2}>
+            {brands.map((brand) => (
+              <span key={brand} className="brand-item">{brand}</span>
             ))}
-          </div>
+          </Marquee>
         </div>
       </section>
 
