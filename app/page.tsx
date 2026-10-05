@@ -32,7 +32,7 @@ export default function Page() {
         <div className="hero-wash" />
         <div className="hero-gridline" />
         <div className="hero-content">
-          <p className="eyebrow light"><span /> Abu Dhabi / UAE <span className="eyebrow-rule" /> Est. 2023</p>
+          <p className="eyebrow light"><span /> Abu Dhabi / UAE</p>
           <h1>Industrial equipment<br /><em>sourced with precision.</em></h1>
           <p className="hero-copy">Electrical, automation, hazardous-area and oil &amp; gas equipment for industrial requirements.</p>
           <div className="hero-actions"><a href="mailto:info@powerpole.ae?subject=RFQ%20Request" className="button button-orange">Request a quote <ArrowUpRight size={16} /></a><a href="#products" className="button button-outline">Explore products <MoveRight size={16} /></a></div>
@@ -51,7 +51,7 @@ export default function Page() {
 
       <section id="about" className="section credibility"><div><p className="eyebrow"><span /> A clear basis for supply</p><h2>Built around<br /><em>industrial supply.</em></h2></div><div className="credibility-body"><p>Power Pole General Trading is an Abu Dhabi-based industrial trading and supply company providing electrical, automation, hazardous-area and oil &amp; gas-related equipment for industrial requirements.</p><div className="facts"><div><strong>EST. 2023</strong><span>Established</span></div><div><strong>MUSSAFAH</strong><span>Abu Dhabi, UAE</span></div><div><strong>B2B SUPPLY</strong><span>Industrial trading</span></div></div></div></section>
 
-      <section className="brands"><p className="eyebrow"><span /> Selected brands &amp; product lines</p><div className="brand-marquee">{brands.map(brand => <span key={brand}>{brand}</span>)}</div></section>
+      <section className="brands"><p className="eyebrow"><span /> Sourced brand references</p><div className="brand-marquee">{brands.map(brand => <span key={brand}>{brand}</span>)}</div></section>
 
       <section className="final-cta"><div className="final-image" /><div className="final-overlay" /><div className="final-content"><p className="eyebrow light"><span /> Start a commercial conversation</p><h2>Looking for a<br /><em>specific component?</em></h2><p>Tell us what you need. We&apos;ll take it from there.</p><div className="hero-actions"><a href="mailto:info@powerpole.ae?subject=RFQ%20Request" className="button button-orange">Request a quote <ArrowUpRight size={16} /></a><a href="https://wa.me/971525439164" className="button button-outline">WhatsApp sales <ArrowUpRight size={16} /></a></div></div></section>
 
