@@ -27,10 +27,6 @@ export const metadata: Metadata = {
     description: 'Industrial equipment supply for demanding applications. Clear quotes from Abu Dhabi.',
     images: ['/industrial-hero.png'],
   },
-  icons: {
-    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
-    apple: '/icon.svg',
-  },
 }
 
 export const viewport: Viewport = {
