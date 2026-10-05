@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ArrowUpRight, ChevronDown, Menu, MoveRight, X } from 'lucide-react'
+import { ArrowUpRight, Cable, ChevronDown, Factory, FileText, Gauge, MapPin, Menu, MoveRight, ShieldCheck, Sparkles, X, Zap } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -59,7 +59,29 @@ export default function Page() {
       })
 
       gsap.from('.image-panel', { y: 45, scale: 0.96, autoAlpha: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out', scrollTrigger: { trigger: '.product-wall', start: 'top 75%', once: true } })
-      gsap.to('.brand-track', { xPercent: -50, duration: 28, ease: 'none', repeat: -1 })
+      const brandTicker = gsap.to('.brand-track', { xPercent: -50, duration: 28, ease: 'none', repeat: -1 })
+      const controls = gsap.utils.toArray<HTMLElement>('.button, .nav-cta, .category-row, .text-link')
+      const pointerHandlers = controls.map((control) => {
+        const lift = gsap.quickTo(control, 'y', { duration: 0.25, ease: 'power2.out' })
+        const enter = () => lift(-3)
+        const leave = () => lift(0)
+        control.addEventListener('pointerenter', enter)
+        control.addEventListener('pointerleave', leave)
+        return { control, enter, leave }
+      })
+      const strip = document.querySelector('.brand-strip')
+      const pauseTicker = () => brandTicker.pause()
+      const resumeTicker = () => brandTicker.resume()
+      strip?.addEventListener('pointerenter', pauseTicker)
+      strip?.addEventListener('pointerleave', resumeTicker)
+      return () => {
+        pointerHandlers.forEach(({ control, enter, leave }) => {
+          control.removeEventListener('pointerenter', enter)
+          control.removeEventListener('pointerleave', leave)
+        })
+        strip?.removeEventListener('pointerenter', pauseTicker)
+        strip?.removeEventListener('pointerleave', resumeTicker)
+      }
     })
 
     return () => { intro.kill(); mm.revert() }
@@ -95,16 +117,16 @@ export default function Page() {
 
       <section id="products" className="section discovery reveal-section" data-reveal>
         <div className="section-intro"><p className="eyebrow"><span /> Product discovery</p><h2>What are<br /><em>you sourcing?</em></h2><p className="intro-copy">A focused supply range for the components, equipment and consumables that keep industrial environments moving.</p></div>
-        <div className="category-feature"><div className="category-visual"><img ref={categoryImageRef} data-gsap src={category.image} alt={`${category.name} equipment`} /><div className="scan-line" /></div><div className="category-list">{categories.map((item, index) => <button key={item.name} className={`category-row ${activeCategory === index ? 'active' : ''}`} onMouseEnter={() => setActiveCategory(index)} onFocus={() => setActiveCategory(index)} onClick={() => setActiveCategory(index)}><span className="category-number">0{index + 1}</span><span className="category-name">{item.name}</span><ArrowUpRight size={18} /></button>)}<div className="category-detail"><p>{category.text}</p><a href="mailto:info@powerpole.ae?subject=Product%20Enquiry">Enquire about this range <MoveRight size={15} /></a></div></div></div>
+        <div className="category-feature"><div className="category-visual"><img ref={categoryImageRef} data-gsap src={category.image} alt={`${category.name} equipment`} /><div className="scan-line" /></div><div className="category-list">{categories.map((item, index) => <button key={item.name} className={`category-row ${activeCategory === index ? 'active' : ''}`} onMouseEnter={() => setActiveCategory(index)} onFocus={() => setActiveCategory(index)} onClick={() => setActiveCategory(index)}><span className="category-number">0{index + 1}</span><span className="category-name">{item.name}</span><span className="category-icon" aria-hidden="true">{index === 0 ? <Zap size={18} /> : index === 1 ? <Gauge size={18} /> : index === 2 ? <ShieldCheck size={18} /> : <Factory size={18} />}</span></button>)}<div className="category-detail"><p>{category.text}</p><a href="mailto:info@powerpole.ae?subject=Product%20Enquiry">Enquire about this range <MoveRight size={15} /></a></div></div></div>
       </section>
 
       <section className="section product-wall reveal-section" data-reveal><div className="wall-heading"><p className="eyebrow"><span /> Supply range</p><h2>Industrial components.<br /><em>One source.</em></h2></div><div className="wall-grid"><div className="wall-tall image-panel"><img src="/product-components.png" alt="Cable glands and industrial connectors" /><span>01 / COMPONENTS</span></div><div className="wall-wide image-panel"><img src="/control-panel.png" alt="Industrial control cabinet components" /><span>02 / CONTROL</span></div><div className="wall-note"><strong>01—04</strong><p>From cable entry and connection to control, protection and hazardous-area requirements.</p></div><div className="wall-small image-panel"><img src="/industrial-hero.png" alt="Electrical equipment detail" /><span>03 / ELECTRICAL</span></div></div></section>
 
       <section id="industries" className="section applications reveal-section" data-reveal><div className="application-copy"><p className="eyebrow light"><span /> Application context</p><h2>Equipment that fits<br /><em>the work.</em></h2><p>Power Pole supports procurement across the industrial environments where dependable components and clear commercial response matter.</p><a href="mailto:info@powerpole.ae?subject=Industrial%20Requirement" className="text-link">Discuss your requirement <ArrowUpRight size={16} /></a></div><div className="application-list"><div><span>01</span><strong>Oil &amp; Gas</strong><small>Equipment, consumables and hazardous-area requirements.</small></div><div><span>02</span><strong>Industrial Facilities</strong><small>Electrical and control components for operating environments.</small></div><div><span>03</span><strong>EPC &amp; Engineering</strong><small>Specified products for project and procurement needs.</small></div><div><span>04</span><strong>Maintenance &amp; Operations</strong><small>Replacement components and routine industrial supply.</small></div></div></section>
 
-      <section id="about" className="section credibility reveal-section" data-reveal><div><p className="eyebrow"><span /> A clear basis for supply</p><h2>Built around<br /><em>industrial supply.</em></h2></div><div className="credibility-body"><p>Power Pole General Trading is an Abu Dhabi-based industrial trading and supply company providing electrical, automation, hazardous-area and oil &amp; gas-related equipment for industrial requirements.</p><div className="facts"><div><strong>EST. 2023</strong><span>Established</span></div><div><strong>MUSSAFAH</strong><span>Abu Dhabi, UAE</span></div><div><strong>B2B SUPPLY</strong><span>Industrial trading</span></div></div></div></section>
+      <section id="about" className="section credibility reveal-section" data-reveal><div><p className="eyebrow"><span /> A clear basis for supply</p><h2>Built around<br /><em>industrial supply.</em></h2></div><div className="credibility-body"><p>Power Pole General Trading is an Abu Dhabi-based industrial trading and supply company providing electrical, automation, hazardous-area and oil &amp; gas-related equipment for industrial requirements.</p><div className="facts"><div><Cable size={19} aria-hidden="true" /><strong>EST. 2023</strong><span>Established</span></div><div><MapPin size={19} aria-hidden="true" /><strong>MUSSAFAH</strong><span>Abu Dhabi, UAE</span></div><div><FileText size={19} aria-hidden="true" /><strong>B2B SUPPLY</strong><span>Industrial trading</span></div></div></div></section>
 
-      <section className="brands reveal-section" data-reveal><p className="eyebrow"><span /> Sourced brand references</p><div className="brand-strip" aria-label="Sourced brand references"><div className="brand-track">{[...brands, ...brands].map((brand, index) => <span key={`${brand}-${index}`}>{brand}</span>)}</div></div></section>
+      <section className="brands reveal-section" data-reveal><p className="eyebrow"><span /> <Sparkles size={13} aria-hidden="true" /> Sourced brand references</p><div className="brand-strip" aria-label="Sourced brand references"><div className="brand-track">{[...brands, ...brands].map((brand, index) => <span key={`${brand}-${index}`}>{brand}</span>)}</div></div></section>
 
       <section className="final-cta"><div className="final-image" /><div className="final-overlay" /><div className="final-content"><p className="eyebrow light"><span /> Start a commercial conversation</p><h2>Looking for a<br /><em>specific component?</em></h2><p>Tell us what you need. We&apos;ll take it from there.</p><div className="hero-actions"><a href="mailto:info@powerpole.ae?subject=RFQ%20Request" className="button button-orange">Request a quote <ArrowUpRight size={16} /></a><a href="https://wa.me/971525439164" className="button button-outline">WhatsApp sales <ArrowUpRight size={16} /></a></div></div></section>
 

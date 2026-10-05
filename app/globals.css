@@ -26,6 +26,7 @@ button { font: inherit; }
 .hero-content, .hero-footer { position:relative; z-index:1; }
 .hero-content { max-width:880px; }
 .eyebrow { display:flex; align-items:center; gap:10px; text-transform:uppercase; letter-spacing:.16em; font-size:10px; color:#6f7472; font-weight:700; }
+.eyebrow svg { color:var(--orange); flex:0 0 auto; }
 .eyebrow.light { color:rgba(255,255,255,.7); }
 .eyebrow span:first-child { width:24px; height:1px; display:block; background:var(--orange); }
 .eyebrow-rule { width:40px; height:1px; background:currentColor; opacity:.4; }
@@ -51,7 +52,9 @@ h1 em,h2 em { font-style:normal; color:var(--orange); }
 .scan-line { position:absolute; top:24px; left:0; height:2px; width:35%; background:var(--orange); animation:scan 3s ease-in-out infinite; }
 @keyframes scan { 0%,100% { transform:translateX(0); } 50% { transform:translateX(180%); } }
 .category-list { border-left:1px solid var(--line); }
-.category-row { width:100%; display:grid; grid-template-columns:38px 1fr 20px; text-align:left; align-items:center; gap:12px; background:none; border:0; border-bottom:1px solid var(--line); padding:22px 18px; cursor:pointer; color:#7d817e; }
+.category-row { width:100%; display:grid; grid-template-columns:38px 1fr 20px; text-align:left; align-items:center; gap:12px; background:none; border:0; border-bottom:1px solid var(--line); padding:22px 18px; cursor:pointer; color:#7d817e; transition:color .25s ease, background-color .25s ease; }
+.category-icon { display:grid; place-items:center; color:#969b97; transition:color .25s ease, transform .25s ease; }
+.category-row.active .category-icon, .category-row:hover .category-icon { color:var(--orange); transform:rotate(-8deg) scale(1.08); }
 .category-row.active { color:var(--graphite); background:#e7e4dd; }
 .category-row:hover { color:var(--graphite); }
 .category-number { font-size:10px; color:var(--orange); }
@@ -84,6 +87,7 @@ h1 em,h2 em { font-style:normal; color:var(--orange); }
 .credibility-body > p { max-width:470px; font-size:20px; line-height:1.5; }
 .facts { border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(3,1fr); margin-top:65px; padding-top:20px; gap:20px; }
 .facts div { display:flex; flex-direction:column; gap:8px; }
+.facts svg { color:var(--orange); margin-bottom:4px; }
 .facts strong { font-size:12px; letter-spacing:.1em; }
 .facts span { font-size:11px; color:#777b78; }
 .brands { padding:40px clamp(24px, 8vw, 120px) 80px; border-top:1px solid var(--line); overflow:hidden; }
